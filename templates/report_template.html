@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>台股隔日沖選股報表 {{ base_date }}</title>
+<script>{{ plotly_js | safe }}</script>
+<style>
+  :root { --up: #c0392b; --down: #1e8449; }
+  body {
+    font-family: "Microsoft JhengHei", "PingFang TC", "Noto Sans TC", sans-serif;
+    margin: 0; background: #f4f6f8; color: #1f2d3d;
+  }
+  .container { max-width: 1080px; margin: 0 auto; padding: 24px 16px 48px; }
+  h1 { font-size: 1.6rem; margin-bottom: 4px; }
+  .meta { color: #5a6b7b; font-size: 0.9rem; margin-bottom: 20px; }
+  .note {
+    background: #fff8e1; border: 1px solid #f0d264; border-radius: 6px;
+    padding: 10px 14px; margin-bottom: 20px; font-size: 0.95rem;
+  }
+  .empty {
+    background: #fff; border-radius: 8px; padding: 48px;
+    text-align: center; font-size: 1.2rem; color: #5a6b7b;
+  }
+  table {
+    width: 100%; border-collapse: collapse; background: #fff;
+    border-radius: 8px; overflow: hidden; font-size: 0.9rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin-bottom: 32px;
+  }
+  th, td { padding: 8px 10px; text-align: right; white-space: nowrap; }
+  th { background: #2c3e50; color: #fff; font-weight: 600; }
+  td:first-child, th:first-child,
+  td:nth-child(2), th:nth-child(2),
+  td:nth-child(3), th:nth-child(3),
+  td:nth-child(4), th:nth-child(4) { text-align: left; }
+  tbody tr:nth-child(even) { background: #f8fafc; }
+  .up { color: var(--up); font-weight: 600; }
+  .down { color: var(--down); font-weight: 600; }
+  .total { font-weight: 700; }
+  .stock {
+    background: #fff; border-radius: 8px; padding: 16px 20px;
+    margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  .stock h2 { font-size: 1.15rem; margin: 0 0 8px; }
+  .stock .sub { color: #5a6b7b; font-size: 0.85rem; margin-bottom: 8px; }
+  footer { color: #8395a7; font-size: 0.8rem; margin-top: 32px; text-align: center; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>台股隔日沖選股報表</h1>
+  <p class="meta">產出時間（台北）：{{ generated_at }}｜資料基準日：{{ base_date }}</p>
+
+  {% if note %}<div class="note">{{ note }}</div>{% endif %}
+
+  {% if picks %}
+  <table>
+    <thead>
+      <tr>
+        <th>#</th><th>代號</th><th>名稱</th><th>族群</th>
+        <th>收盤</th><th>漲跌幅</th><th>成交量(張)</th>
+        <th>流動性(40)</th><th>波動性(30)</th><th>族群(20)</th><th>技術面(10)</th>
+        <th>總分</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in picks %}
+      <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{ p.code }}</td>
+        <td>{{ p.name }}</td>
+        <td>{{ p.sector }}</td>
+        <td>{{ "%.2f" | format(p.close) }}</td>
+        <td class="{{ 'up' if p.change_pct >= 0 else 'down' }}">
+          {{ "%+.2f%%" | format(p.change_pct) }}
+        </td>
+        <td>{{ "{:,.0f}".format(p.volume_lots) }}</td>
+        <td>{{ "%.1f" | format(p.score_liquidity) }}</td>
+        <td>{{ "%.1f" | format(p.score_volatility) }}</td>
+        <td>{{ "%.1f" | format(p.score_sector) }}</td>
+        <td>{{ "%.1f" | format(p.score_technical) }}</td>
+        <td class="total">{{ "%.1f" | format(p.total_score) }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  {% for p in picks %}
+  <section class="stock">
+    <h2>{{ loop.index }}. {{ p.code }} {{ p.name }}</h2>
+    <p class="sub">
+      收盤 {{ "%.2f" | format(p.close) }}｜ATR {{ "%.2f%%" | format(p.atr_pct) }}｜
+      5MA乖離 {{ "%.2f%%" | format(p.ma5_gap_pct) }}｜總分 {{ "%.1f" | format(p.total_score) }}
+    </p>
+    {{ p.chart | safe }}
+  </section>
+  {% endfor %}
+  {% else %}
+  <div class="empty">本日無符合條件標的</div>
+  {% endif %}
+
+  <footer>本報表為程式自動產出，僅供研究參考，不構成投資建議。</footer>
+</div>
+</body>
+</html>
