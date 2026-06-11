@@ -1,0 +1,40 @@
+name: Daily Stock Analysis
+
+on:
+  schedule:
+    - cron: "0 12 * * *"  # 每日 12:00 UTC（台北 20:00，收盤後）
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  analyze-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run stock analyzer
+        run: python stock_analyzer.py
+
+      - name: Prepare publish directory
+        run: |
+          test -f output/report.html || { echo "output/report.html not found"; exit 1; }
+          cp output/report.html output/index.html
+
+      - name: Deploy to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./output
+          force_orphan: true
