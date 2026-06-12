@@ -10,4 +10,4 @@
 ## 3. 驗證
 
 - [x] 3.1 確認 daily.yml YAML 語法正確且 cron 為 `0 4 * * *`
-- [ ] 3.2 從 GitHub Actions 頁面以 workflow_dispatch 手動觸發一次，確認流程仍正常產出並部署
+- [x] 3.2 從 GitHub Actions 頁面以 workflow_dispatch 手動觸發一次，確認流程仍正常產出並部署

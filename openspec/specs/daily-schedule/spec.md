@@ -2,15 +2,15 @@
 
 ## Purpose
 
-GitHub Actions 排程：每日 12:00 UTC 自動執行選股分析器，支援手動觸發測試，失敗時清楚可見且不部署不完整產出。
+GitHub Actions 排程：每日 04:00 UTC（台北 12:00 盤中）自動執行選股分析器，支援手動觸發測試，失敗時清楚可見且不部署不完整產出。
 
 ## Requirements
 
 ### Requirement: 每日定時自動執行
-系統 SHALL 以 GitHub Actions 於每日 12:00 UTC 自動執行 stock_analyzer.py，於 Linux runner 安裝 Python 3.13 與 requirements.txt 相依套件後產出 output/report.html。
+系統 SHALL 以 GitHub Actions 於每日 04:00 UTC（台北 12:00 盤中）自動執行 stock_analyzer.py，於 Linux runner 安裝 Python 3.13 與 requirements.txt 相依套件後產出 output/report.html。
 
 #### Scenario: 排程觸發
-- **WHEN** UTC 時間到達每日 12:00
+- **WHEN** UTC 時間到達每日 04:00
 - **THEN** workflow 自動啟動，執行分析器並產出 report.html
 
 #### Scenario: 相依套件安裝
