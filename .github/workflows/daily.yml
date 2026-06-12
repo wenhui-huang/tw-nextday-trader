@@ -2,7 +2,7 @@ name: Daily Stock Analysis
 
 on:
   schedule:
-    - cron: "0 12 * * *"  # 每日 12:00 UTC（台北 20:00，收盤後）
+    - cron: "0 4 * * *"  # 每日 04:00 UTC（台北 12:00，盤中）
   workflow_dispatch:
 
 permissions:
